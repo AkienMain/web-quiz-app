@@ -1,5 +1,7 @@
 # web-quiz-app
 
+![images/i003.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i003.png?raw=true)
+
 ## Open page with sample data
 
 - https://akienmain.github.io/web-quiz-app/?deployId=AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR
