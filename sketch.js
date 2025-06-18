@@ -2,12 +2,10 @@ let qData = [];
 let index = 0;
 let state = 2;
 let isLoading = false;
-let deployIdInput;
 let sheetNameInput;
 let answerList = [""];
 let answerNum = 0;
 
-const DEFAULT_DEPLOY_ID = "AKfycbzNKo5E9UAUbLQoA3BM-DXwJQ2iye_3UDXY_7mKT2fzpKmBh2_mlXXN0RNmaWPXFoRC";
 const DEFAULT_SHEET_NAME = "math";
 
 const COLOR_1 = 255;
@@ -25,7 +23,6 @@ const B_CHOICES = [
 ];
 
 function preload() {
-  deployIdInput = createInput(DEFAULT_DEPLOY_ID).position(40, 30);
   sheetNameInput = createInput(DEFAULT_SHEET_NAME).position(40, 80);
   getData();
 }
@@ -39,7 +36,6 @@ function draw() {
   background(COLOR_1);
   stroke(COLOR_3);
 
-  drawTextBox("Deploy Id", 40, 10, 200, 30);
   drawTextBox("Sheet Name", 40, 60, 200, 80);
   drawButton(B_GET_QUESTION, "GET QUESTION");
 
@@ -122,9 +118,14 @@ function getUrl(deployId, dict=null) {
   return s;
 }
 
+function getDeployId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('deployId');
+}
+
 function getData() {
   isLoading = true;
-  let url = getUrl(deployIdInput.value(), {
+  let url = getUrl(getDeployId(), {
     'func': 'getData',
     'sheetName': sheetNameInput.value()
   });
@@ -137,7 +138,7 @@ function getData() {
 }
 
 function sendResult(index, correct, total) {
-  let url = getUrl(deployIdInput.value(), {
+  let url = getUrl(getDeployId(), {
     'func': 'sendResult',
     'sheetName': sheetNameInput.value(),
     'index': index,
