@@ -1,18 +1,19 @@
-let qData = [];
+let qData = [["","","","",""]];
 let index = 0;
 let state = 2;
+let areSheetNamesGot = false;
 let isLoading = false;
-let sheetNameInput;
+let isLoaded = false;
+let sheetNamesSelect;
 let answerList = [""];
 let answerNum = 0;
-
-const DEFAULT_SHEET_NAME = "math";
 
 const COLOR_1 = 255;
 const COLOR_2 = 200;
 const COLOR_3 = 20;
 const COLOR_4 = 240;
 
+const SHEET_NAMES_SELECT = [40, 80];
 const B_NEXT = [100, 350, 200, 40];
 const B_GET_QUESTION = [260, 10, 100, 100];
 const B_CHOICES = [
@@ -23,7 +24,7 @@ const B_CHOICES = [
 ];
 
 function preload() {
-  sheetNameInput = createInput(DEFAULT_SHEET_NAME).position(40, 80);
+  getSheetNames();
   getData();
 }
 
@@ -39,13 +40,12 @@ function draw() {
   drawTextBox("Sheet Name", 40, 60, 200, 80);
   drawButton(B_GET_QUESTION, "GET QUESTION");
 
-  if (!isLoading) {
+  if (isLoaded) {
 
     if (state == 2) {
       index = int(random(0, qData.length));
       state = 0;
     }
-
 
     ratio = qData[index][0] + "/" + qData[index][1];
     pct = qData[index][0] / qData[index][1];
@@ -66,18 +66,9 @@ function draw() {
       drawTextBox(answerNum==correctNum?"Correct":"Failed", width/2-40, 310, width/2+40, 330);
       drawButton(B_NEXT, "NEXT");
     }
-  } else {
-    drawLoadingSign();
   }
-}
-
-function drawLoadingSign() {
-  for (let i=0; i<8; i++) {
-    push();
-    fill(COLOR_2);
-    translate(cos(frameCount/8+i*PI/4)*30,sin(frameCount/6+i*PI/4)*30);
-    circle(width/2, height/2, 10);
-    pop();
+  if (isLoading) {
+    drawLoadingSign();
   }
 }
 
@@ -121,31 +112,52 @@ function getUrl(deployId, dict=null) {
 function getDeployId() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get('deployId');
+  //return **DEPLOY_ID_TEST**;
 }
 
 function getData() {
-  isLoading = true;
   let url = getUrl(getDeployId(), {
     'func': 'getData',
-    'sheetName': sheetNameInput.value()
+    'sheetName': sheetNamesSelect.value()
   });
+  isLoading = true;
+  isLoaded = false;
   httpGet(url, function(response) {
     print(response);
     qData = strToArray(response);
     index = 0;
     isLoading = false;
+    isLoaded = true;
   });
 }
 
 function sendResult(index, correct, total) {
   let url = getUrl(getDeployId(), {
     'func': 'sendResult',
-    'sheetName': sheetNameInput.value(),
+    'sheetName': sheetNamesSelect.value(),
     'index': index,
     'correct': correct,
     'total': total
   });
   httpGet(url, function() {});
+}
+
+function getSheetNames() {
+  let url = getUrl(getDeployId(), {
+    'func': 'getSheetNames'
+  });
+  isLoading = true;
+  areSheetNamesGot = false;
+  httpGet(url, function(response) {
+    print(response);
+    let sheetNames = split(response, ',');
+    sheetNamesSelect = createSelect().position(SHEET_NAMES_SELECT[0], SHEET_NAMES_SELECT[1]);
+    for (let i=0; i<sheetNames.length; i++) {
+      sheetNamesSelect.option(sheetNames[i]);
+    }
+    isLoading = false;
+    areSheetNamesGot = true;
+  });
 }
 
 function strToArray(s) {
@@ -195,4 +207,14 @@ function isInside(buttonPos) {
     mouseX < buttonPos[0] + buttonPos[2] &&
     mouseY > buttonPos[1] &&
     mouseY < buttonPos[1] + buttonPos[3];
+}
+
+function drawLoadingSign() {
+  for (let i=0; i<8; i++) {
+    push();
+    fill(COLOR_2);
+    translate(cos(frameCount/8+i*PI/4)*30,sin(frameCount/6+i*PI/4)*30);
+    circle(width/2, height/2, 10);
+    pop();
+  }
 }
