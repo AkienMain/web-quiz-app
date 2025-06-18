@@ -12,9 +12,9 @@
 ## How to set your data
 
 - Create spread sheet and set data
-  - ![images/i001.png](https://github.com/AkienMain/sudoku_solver/blob/main/images/i001.png?raw=true)
+  - ![images/i001.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i001.png?raw=true)
 - Note your spread sheet id
-  - ![images/i002.png](https://github.com/AkienMain/sudoku_solver/blob/main/images/i002.png?raw=true)
+  - ![images/i002.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i002.png?raw=true)
 - Open Apps Script from extension
 - Copy script from [here](https://github.com/AkienMain/web-quiz-app-server-gas/blob/main/sampleCode.gs)
   - Remember to set your spread sheet id
