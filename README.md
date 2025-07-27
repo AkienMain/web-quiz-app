@@ -1,6 +1,6 @@
 # web-quiz-app
 
-![images/i003.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i003.png?raw=true)
+![images/i004.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i004.png?raw=true)
 
 ## Open page with sample data
 
