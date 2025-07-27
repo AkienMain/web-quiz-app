@@ -103,10 +103,10 @@ function getUrl(deployId, query) {
  */
 function getDeployId() {
   const urlParams = new URLSearchParams(window.location.search);
-  // return urlParams.get('deployId');
+  return urlParams.get('deployId');
 
   // Sample deploy id for debug
-  return 'AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR';
+  //return 'AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR';
 }
 
 /**
