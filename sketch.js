@@ -4,13 +4,13 @@
  * [[Count of correct answer, Count of total answer, Question, Answer list, Correct answer index]]
  * @type {list<list<string>>}
  */
-let qData = [["","","","",""]];
+let qData = [['','','','','']];
 
 /**
  * Sheet names
  * @type {list<string>}
  */
-let sheetNames = [""];
+let sheetNames = [''];
 
 /**
  * Whether system is loading
@@ -22,7 +22,7 @@ let isLoading = false;
  * Answer list
  * @type {list<string>}
  */
-let answerList = [""];
+let answerList = [''];
 
 /** @type {string} */
 const COLOR_1 = '#EEEEEE';
@@ -34,13 +34,14 @@ const BACKGROUND = '#FFFFFF';
 const sheet_name_select = document.getElementById('sheet_name_select');
 const get_question_button = document.getElementById('get_question_button');
 
+get_question_button.textContent = 'GET QUESTION';
 get_question_button.addEventListener('click', () => {
   removeChildren(answer_div);
   removeChildren(next_div);
-  accuracy_div.textContent = "";
-  question_div.textContent = "";
-  correct_div.textContent = "";
-  selected_div.textContent = "";
+  accuracy_div.textContent = '';
+  question_div.textContent = '';
+  correct_div.textContent = '';
+  selected_div.textContent = '';
   getQuestionData();
 })
 
@@ -87,11 +88,11 @@ function draw() {
 function getUrl(deployId, query) {
   let k = Object.keys(query);
   let v = Object.values(query);
-  let url = "https://script.google.com/macros/s/" + deployId + "/exec";
-  if (k != null) url += "?";
+  let url = 'https://script.google.com/macros/s/' + deployId + '/exec';
+  if (k != null) url += '?';
   for (let i=0; i<k.length; i++) {
-    url += k[i] + "=" + v[i];
-    if (i<k.length-1) url += "&";
+    url += k[i] + '=' + v[i];
+    if (i<k.length-1) url += '&';
   }
   return url;
 }
@@ -102,10 +103,10 @@ function getUrl(deployId, query) {
  */
 function getDeployId() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('deployId');
+  // return urlParams.get('deployId');
 
   // Sample deploy id for debug
-  // return "AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR";
+  return 'AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR';
 }
 
 /**
@@ -167,7 +168,7 @@ function getSheetNames() {
 
     // Set sheet name option
     for (let i=0; i<sheetNames.length; i++) {
-      var option = document.createElement("option");
+      var option = document.createElement('option');
       option.text = sheetNames[i];
       option.value = sheetNames[i];
       sheet_name_select.add(option);
@@ -196,13 +197,13 @@ function strToArray(s) {
  * @returns {string} String
  */
 function arrayToStr(a) {
-  let s = "";
+  let s = '';
   for (let i=0; i<a.length; i++) {
     for (let j=0; j<a[i].length; j++) {
       s += a[i][j];
-      if (j<a[i].length-1) s += "\t";
+      if (j<a[i].length-1) s += '\t';
     }
-    if (i<a.length-1) s += "\n";
+    if (i<a.length-1) s += '\n';
   }
   return s;
 }
@@ -219,8 +220,8 @@ function refreshQuestion() {
   removeChildren(next_div);
   accuracy_div.textContent = getAccuracyString(index);
   question_div.textContent = qData[index][2];
-  correct_div.textContent = "";
-  selected_div.textContent = "";
+  correct_div.textContent = '';
+  selected_div.textContent = '';
 
   // Update answer div
   updateAnswerDiv(index);
@@ -259,8 +260,8 @@ function updateAnswerDiv(index) {
 
       // Show string
       accuracy_div.textContent = getAccuracyString(index);
-      correct_div.textContent = "Correct: "+answerList[correctCount];
-      selected_div.textContent = "Selected: "+answerList[answerCount];
+      correct_div.textContent = 'Correct: '+answerList[correctCount];
+      selected_div.textContent = 'Selected: '+answerList[answerCount];
 
       // Update next div
       updateNextDiv();
@@ -283,8 +284,8 @@ function updateNextDiv() {
 
     // Remove next div's children
     removeChildren(next_div);
-    correct_div.textContent = "";
-    selected_div.textContent = "";
+    correct_div.textContent = '';
+    selected_div.textContent = '';
 
     // Refresh question
     refreshQuestion();
@@ -302,9 +303,9 @@ function updateNextDiv() {
  * @returns {string} Accuracy string
  */
 function getAccuracyString(index) {
-  ratio = qData[index][0] + "/" + qData[index][1];
+  ratio = qData[index][0] + '/' + qData[index][1];
   pct = qData[index][0] / qData[index][1];
-  return "Accuracy: "+nf(pct*100,0,2)+"% ("+ratio+")";
+  return 'Accuracy: '+nf(pct*100,0,2)+'% ('+ratio+')';
 }
 
 /**
