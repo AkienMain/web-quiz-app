@@ -25,30 +25,29 @@ let isLoading = false;
 let answerList = [''];
 
 /** @type {string} */
-const COLOR_1 = '#EEEEEE';
-/** @type {string} */
-const COLOR_2 = '#CCCCCC';
+const COLOR_1 = '#CCCCCC';
 /** @type {string} */
 const BACKGROUND = '#FFFFFF';
 
 const sheet_name_select = document.getElementById('sheet_name_select');
-const get_question_button = document.getElementById('get_question_button');
+sheet_name_select.className = 'form-select';
 
+const get_question_button = document.getElementById('get_question_button');
 get_question_button.textContent = 'GET QUESTION';
 get_question_button.addEventListener('click', () => {
   removeChildren(answer_div);
   removeChildren(next_div);
-  accuracy_div.textContent = '';
-  question_div.textContent = '';
-  correct_div.textContent = '';
-  selected_div.textContent = '';
+  accuracy_p.textContent = '';
+  question_p.textContent = '';
+  correct_p.textContent = '';
+  selected_p.textContent = '';
   getQuestionData();
 })
 
-const accuracy_div = document.getElementById('accuracy_div');
-const question_div = document.getElementById('question_div');
-const correct_div = document.getElementById('correct_div');
-const selected_div = document.getElementById('selected_div');
+const accuracy_p = document.getElementById('accuracy_p');
+const question_p = document.getElementById('question_p');
+const correct_p = document.getElementById('correct_p');
+const selected_p = document.getElementById('selected_p');
 
 const answer_div = document.getElementById('answer_div');
 const next_div = document.getElementById('next_div');
@@ -106,7 +105,7 @@ function getDeployId() {
   return urlParams.get('deployId');
 
   // Sample deploy id for debug
-  //return 'AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR';
+  // return 'AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR';
 }
 
 /**
@@ -218,10 +217,10 @@ function refreshQuestion() {
 
   removeChildren(answer_div);
   removeChildren(next_div);
-  accuracy_div.textContent = getAccuracyString(index);
-  question_div.textContent = qData[index][2];
-  correct_div.textContent = '';
-  selected_div.textContent = '';
+  accuracy_p.textContent = getAccuracyString(index);
+  question_p.textContent = qData[index][2];
+  correct_p.textContent = '';
+  selected_p.textContent = '';
 
   // Update answer div
   updateAnswerDiv(index);
@@ -236,12 +235,18 @@ function updateAnswerDiv(index) {
   // Set answer list
   answerList = split(qData[index][3], ';');
 
+  // Get shuffle list
+  shuffleList = getShuffleList(answerList.length);
+
   // Repeat for each answer
   for (let i=0; i<answerList.length; i++) {
 
+    shuffledIndex = shuffleList[i];
+
     // Create answer button
     const answerButton = document.createElement('button');
-    answerButton.textContent = answerList[i];
+    answerButton.textContent = answerList[shuffledIndex];
+    answerButton.className = 'btn btn-primary';
     answerButton.addEventListener('click', function() {
 
       // Remove answer div's children
@@ -249,19 +254,24 @@ function updateAnswerDiv(index) {
 
       // Update value
       qData[index][1] = addNumberString(qData[index][1], 1);
-      let answerCount = i;
-      let correctCount = qData[index][4];
-      if (answerCount == correctCount) {
+      let selectedIndex = shuffleList[i];
+      let correctIndex = qData[index][4];
+
+      // Answer is correct
+      if (selectedIndex == correctIndex) {
         qData[index][0] = addNumberString(qData[index][0], 1);
+        selected_p.className = 'alert alert-success';
+      } else {
+        selected_p.className = 'alert alert-danger';
       }
 
       // Send result
       sendResult(index, qData[index][0], qData[index][1]);
 
       // Show string
-      accuracy_div.textContent = getAccuracyString(index);
-      correct_div.textContent = 'Correct: '+answerList[correctCount];
-      selected_div.textContent = 'Selected: '+answerList[answerCount];
+      accuracy_p.textContent = getAccuracyString(index);
+      correct_p.textContent = 'Correct: '+ answerList[correctIndex];
+      selected_p.textContent = 'Selected: '+ answerList[selectedIndex];
 
       // Update next div
       updateNextDiv();
@@ -280,12 +290,14 @@ function updateNextDiv() {
   // Create next button
   const nextButton = document.createElement('button');
   nextButton.textContent = 'NEXT';
+  nextButton.className = 'btn btn-primary';
   nextButton.addEventListener('click', function() {
 
     // Remove next div's children
     removeChildren(next_div);
-    correct_div.textContent = '';
-    selected_div.textContent = '';
+    correct_p.textContent = '';
+    selected_p.textContent = '';
+    selected_p.className = '';
 
     // Refresh question
     refreshQuestion();
@@ -295,6 +307,29 @@ function updateNextDiv() {
   // Append next button
   next_div.appendChild(nextButton);
 
+}
+
+/**
+ * Get shuffle list
+ * @param {int} l Length
+ * @returns {list<int>} Shuffle list
+ */
+function getShuffleList(l) {
+
+  // Create ordered list [0, 1, ..., l]
+  s = [];
+  for (let i=0; i<l; i++) {
+    s.push(i)
+  }
+
+  // Fisher-Yates shuffle
+  for (let i=l; i>0; i--) {
+    index = int(random(0, l));
+    let tmp = s[index];
+    s[index] = s[l-1];
+    s[l-1] = tmp;
+  }
+  return s;
 }
 
 /**
@@ -342,8 +377,8 @@ function removeChildren(element) {
 function drawLoadingSign() {
   for (let i=0; i<8; i++) {
     push();
-    fill(COLOR_2);
-    stroke(COLOR_2);
+    fill(COLOR_1);
+    stroke(COLOR_1);
     translate(cos(frameCount/8+i*PI/4)*15,sin(frameCount/6+i*PI/4)*15);
     circle(width/2, height/2, 6);
     pop();
