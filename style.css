@@ -1,8 +1,38 @@
+:root {
+	--color1: #EEEEEE;
+	--color2: #CCCCCC;
+  --background: #FFFFFF;
+	--shadow: #00000088;
+}
+
 html, body {
-  margin: 0;
-  padding: 0;
+  font-family: sans-serif;
 }
 
 canvas {
   display: block;
+}
+
+div {
+  justify-content: center;
+  padding: 16px;
+  margin: 4px;
+}
+
+button {
+  background-color: var(--color2);
+  width: 120px;
+  height: 40px;
+  border-radius: 20px;
+  border: none;
+  margin: 4px;
+  box-shadow: 1px 1px 4px 0px var(--shadow);
+}
+
+.divi {
+  display: flex;
+}
+
+.divi_question {
+  background-color: var(--color1);
 }
