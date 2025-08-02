@@ -23,11 +23,12 @@
 - ![images/i001.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i001.png?raw=true)
 
 - columns
-  1. Number of correct answers
-  2. Number of answers
-  3. Question
-  4. Choices
-  5. Index of correct answers
+
+  1 Number of correct answers  
+  2 Number of answers  
+  3 Question  
+  4 Choices  
+  5 Index of correct answers  
 
 - Note spreadsheet id
   - ![images/i002.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i002.png?raw=true)
