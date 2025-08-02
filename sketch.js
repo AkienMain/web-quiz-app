@@ -105,7 +105,19 @@ function getDeployId() {
   return urlParams.get('deployId');
 
   // Sample deploy id for debug
-  // return 'AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR';
+  // return 'AKfycbzawU6UrMJ09U8XodGZQzRl4j7LWMtMp7qM4N4pAIvdhq9Jp-lG5n4uyPuYnoU4c-oA';
+}
+
+/**
+ * Get spreadsheet id
+ * @returns {string} Deploy id of Apps Script
+ */
+function getSpreadsheetId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('spreadsheetId');
+
+  // Sample spreadsheet id for debug
+  // return '1x6S9YuGaWFpyFIwLl3EXBtH1P32GPfE4T4iKdAVGBTg';
 }
 
 /**
@@ -115,6 +127,7 @@ function getQuestionData() {
 
   let url = getUrl(getDeployId(), {
     'func': 'getData',
+    'spreadsheetId': getSpreadsheetId(),
     'sheetName': sheet_name_select.options[sheet_name_select.selectedIndex].value
   });
 
@@ -140,6 +153,7 @@ function sendResult(index, correct, total) {
 
   let url = getUrl(getDeployId(), {
     'func': 'sendResult',
+    'spreadsheetId': getSpreadsheetId(),
     'sheetName': sheet_name_select.options[sheet_name_select.selectedIndex].value,
     'index': index,
     'correct': correct,
@@ -155,7 +169,8 @@ function sendResult(index, correct, total) {
 function getSheetNames() {
 
   let url = getUrl(getDeployId(), {
-    'func': 'getSheetNames'
+    'func': 'getSheetNames',
+    'spreadsheetId': getSpreadsheetId()
   });
 
   isLoading = true;

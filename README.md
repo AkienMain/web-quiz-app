@@ -4,7 +4,7 @@
 
 ## Open page with sample data
 
-- https://akienmain.github.io/web-quiz-app/?deployId=AKfycbzCbTEjcU4s547Ajm3KS2_wcRFjyxXJ0GAI1TEklebh4pJbEuc-vV14-joD-VfSAHmR
+- https://akienmain.github.io/web-quiz-app/?deployId=AKfycbzawU6UrMJ09U8XodGZQzRl4j7LWMtMp7qM4N4pAIvdhq9Jp-lG5n4uyPuYnoU4c-oA&spreadsheetId=1x6S9YuGaWFpyFIwLl3EXBtH1P32GPfE4T4iKdAVGBTg
 
 ## Repository of sample data
 
@@ -13,7 +13,7 @@
 
 ## How to set your data
 
-- Create spread sheet and set data
+- Create spreadsheet and set data
   - ![images/i001.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i001.png?raw=true)
   - columns
     1. Number of correct answers
@@ -21,17 +21,15 @@
     3. Question
     4. Choices
     5. Index of correct answers
-- Note your spread sheet id
+- Note your spreadsheet id
   - ![images/i002.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i002.png?raw=true)
 - Open Apps Script from extension
-- Copy script from [here](https://github.com/AkienMain/web-quiz-app-server-gas/blob/main/sampleCode.gs)
-  - Remember to set your spread sheet id
-    ```
-    const SPREAD_SHEET_ID = '<<SPREAD SHEET ID>>';
-    ```
-- Deploy it
+- Create script
+  - [source](https://github.com/AkienMain/web-quiz-app-server-gas/blob/main/sampleCode.gs)
+  - Deploy it
+  - Note deploy id
 - Put url on blowser
   - Contain deploy id in query
     ```
-    https://akienmain.github.io/web-quiz-app/?deployId=<<DEPLOY ID>>
+    https://akienmain.github.io/web-quiz-app/?deployId=<<DEPLOY ID>>&spreadsheetId=<<SPREADSHEETdeployId=<<DEPLOY ID>> ID>>
     ```
