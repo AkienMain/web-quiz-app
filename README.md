@@ -32,8 +32,6 @@
     https://akienmain.github.io/web-quiz-app/?deployId=<<DEPLOY ID>>&spreadsheetId=<<SPREADSHEET>>
     ```
 
-  - Example https://akienmain.github.io/web-quiz-app/?deployId=AKfycbzawU6UrMJ09U8XodGZQzRl4j7LWMtMp7qM4N4pAIvdhq9Jp-lG5n4uyPuYnoU4c-oA&spreadsheetId=1x6S9YuGaWFpyFIwLl3EXBtH1P32GPfE4T4iKdAVGBTg
-
 ### 2-1. How to set your data
 
 - Create spreadsheet and script on your googleDrive
