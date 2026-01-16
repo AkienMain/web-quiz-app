@@ -1,4 +1,38 @@
 
+const sheet_name_select = document.getElementById('sheet_name_select');
+const sheet_name_select_div = document.getElementById('sheet_name_select_div');
+const get_questions_button = document.getElementById('get_questions_button');
+
+const accuracy_p = document.getElementById('accuracy_p');
+const question_p = document.getElementById('question_p');
+const correct_p = document.getElementById('correct_p');
+const selected_p = document.getElementById('selected_p');
+
+const answer_div = document.getElementById('answer_div');
+const next_div = document.getElementById('next_div');
+const question_textarea_div = document.getElementById('question_textarea_div');
+const question_textarea = document.getElementById('question_textarea');
+const spinner = document.getElementById('spinner');
+
+/**
+ * Enum of question source type
+ * 0: get question data from server
+ * 1: get question data from textarea
+ * @type {Object}
+ */
+const QuestionSourceType = Object.freeze({
+  SERVER: 0,
+  TEXTAREA: 1,
+});
+
+/**
+ * Question source type
+ * 0: get question data from server
+ * 1: get question data from textarea
+ * @type {QuestionSourceType}
+ */
+let questionSourceType = QuestionSourceType.TEXTAREA;
+
 /**
  * Question data
  * [[Count of correct answer, Count of total answer, Question, Answer list, Correct answer index]]
@@ -13,66 +47,28 @@ let qData = [['','','','','']];
 let sheetNames = [''];
 
 /**
- * Whether system is loading
- * @type {boolean}
- */
-let isLoading = false;
-
-/**
  * Answer list
  * @type {list<string>}
  */
 let answerList = [''];
 
-/** @type {string} */
-const COLOR_1 = '#CCCCCC';
-/** @type {string} */
-const BACKGROUND = '#FFFFFF';
-
-const sheet_name_select = document.getElementById('sheet_name_select');
-sheet_name_select.className = 'form-select';
-
-const get_question_button = document.getElementById('get_question_button');
-get_question_button.textContent = 'GET QUESTION';
-get_question_button.addEventListener('click', () => {
-  removeChildren(answer_div);
-  removeChildren(next_div);
-  accuracy_p.textContent = '';
-  question_p.textContent = '';
-  correct_p.textContent = '';
-  selected_p.textContent = '';
-  getQuestionData();
-})
-
-const accuracy_p = document.getElementById('accuracy_p');
-const question_p = document.getElementById('question_p');
-const correct_p = document.getElementById('correct_p');
-const selected_p = document.getElementById('selected_p');
-
-const answer_div = document.getElementById('answer_div');
-const next_div = document.getElementById('next_div');
-
-
 
 // ---------------------------------------------------
 // p5js Functions
 
-function preload() {
-  getSheetNames();
-}
-
+/**
+ * run once
+ */
 function setup() {
-  let canvas = createCanvas(40, 40);
-  canvas.parent('canvas');
-}
-
-function draw() {
-  background(BACKGROUND);
-  if (isLoading) {
-    drawLoadingSign();
+  let input = localStorage.getItem('question_textarea_input');
+  if (input !== null) {
+    question_textarea.value = input;
   }
+  if (questionSourceType == QuestionSourceType.SERVER) {
+    getSheetNames();
+  }
+  switchVisiblity();
 }
-
 
 
 // ---------------------------------------------------
@@ -103,9 +99,6 @@ function getUrl(deployId, query) {
 function getDeployId() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get('deployId');
-
-  // Sample deploy id for debug
-  // return 'AKfycbzawU6UrMJ09U8XodGZQzRl4j7LWMtMp7qM4N4pAIvdhq9Jp-lG5n4uyPuYnoU4c-oA';
 }
 
 /**
@@ -115,9 +108,6 @@ function getDeployId() {
 function getSpreadsheetId() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get('spreadsheetId');
-
-  // Sample spreadsheet id for debug
-  // return '1x6S9YuGaWFpyFIwLl3EXBtH1P32GPfE4T4iKdAVGBTg';
 }
 
 /**
@@ -125,22 +115,33 @@ function getSpreadsheetId() {
  */
 function getQuestionData() {
 
-  let url = getUrl(getDeployId(), {
-    'func': 'getData',
-    'spreadsheetId': getSpreadsheetId(),
-    'sheetName': sheet_name_select.options[sheet_name_select.selectedIndex].value
-  });
+  switch(questionSourceType) {
+    case QuestionSourceType.SERVER:
 
-  isLoading = true;
-  httpGet(url, function(response) {
-    isLoading = false;
+      let url = getUrl(getDeployId(), {
+        'func': 'getData',
+        'spreadsheetId': getSpreadsheetId(),
+        'sheetName': sheet_name_select.options[sheet_name_select.selectedIndex].value
+      });
 
-    // Set question data
-    qData = strToArray(response);
+      setElementVisible(spinner, true);
+      httpGet(url, function(response) {
+        setElementVisible(spinner, false);
 
-    // Refresh question
-    refreshQuestion();
-  });
+        // Set question data
+        qData = strToArray(response);
+        // Refresh question
+        refreshQuestion();
+      });
+      break;
+
+    case QuestionSourceType.TEXTAREA:
+      qData = strToArray(question_textarea.value);
+      // Refresh question
+      refreshQuestion();
+      break;
+
+  }
 }
 
 /**
@@ -173,14 +174,15 @@ function getSheetNames() {
     'spreadsheetId': getSpreadsheetId()
   });
 
-  isLoading = true;
+  setElementVisible(spinner, true);
   httpGet(url, function(response) {
-    isLoading = false;
+    setElementVisible(spinner, false);
 
     // Set sheet names
     sheetNames = split(response, ',');
 
     // Set sheet name option
+    sheet_name_select.innerHTML = null;
     for (let i=0; i<sheetNames.length; i++) {
       var option = document.createElement('option');
       option.text = sheetNames[i];
@@ -280,8 +282,17 @@ function updateAnswerDiv(index) {
         selected_p.className = 'alert alert-danger';
       }
 
-      // Send result
-      sendResult(index, qData[index][0], qData[index][1]);
+      switch(questionSourceType) {
+        case QuestionSourceType.SERVER:
+          // Send result
+          sendResult(index, qData[index][0], qData[index][1]);
+          break;
+        case QuestionSourceType.TEXTAREA:
+          // Set questions data to text area and local strage
+          question_textarea.value = arrayToStr(qData);
+          localStorage.setItem('question_textarea_input', question_textarea.value);
+          break;
+      }
 
       // Show string
       accuracy_p.textContent = getAccuracyString(index);
@@ -387,15 +398,64 @@ function removeChildren(element) {
 }
 
 /**
- * Draw loading sign
+ * Set element visible or invisible
+ * @param {HTMLElement} element element
+ * @param {Boolean} isDisplayed true: visible, false: invisible
  */
-function drawLoadingSign() {
-  for (let i=0; i<8; i++) {
-    push();
-    fill(COLOR_1);
-    stroke(COLOR_1);
-    translate(cos(frameCount/8+i*PI/4)*15,sin(frameCount/6+i*PI/4)*15);
-    circle(width/2, height/2, 6);
-    pop();
+function setElementVisible(element, isDisplayed) {
+  if (isDisplayed) {
+    element.classList.add('visible');
+    element.classList.remove('not-visible');
+  } else {
+    element.classList.remove('visible');
+    element.classList.add('not-visible');
   }
+}
+
+/**
+ * Switch element's visibility
+ */
+function switchVisiblity() {
+  switch(questionSourceType) {
+
+    case QuestionSourceType.SERVER:
+      setElementVisible(sheet_name_select_div, true);
+      setElementVisible(question_textarea_div, false);
+      break;
+
+    case QuestionSourceType.TEXTAREA:
+      setElementVisible(sheet_name_select_div, false);
+      setElementVisible(question_textarea_div, true);
+      break;
+  }
+}
+
+/**
+ * Execute this when radio is clicked
+ * @param {string} id Id of element
+ */
+function changedGetQuestionsRadio(id) {
+  switch(id) {
+    case 'get_questions_from_server':
+      questionSourceType = QuestionSourceType.SERVER;
+      getSheetNames();
+      break;
+    case 'get_questions_from_textarea':
+      questionSourceType = QuestionSourceType.TEXTAREA;
+      break;
+  }
+  switchVisiblity();
+}
+
+/**
+ * Execute this when questions button is clicked
+ */
+function clickedGetQuestionsButton() {
+  removeChildren(answer_div);
+  removeChildren(next_div);
+  accuracy_p.textContent = '';
+  question_p.textContent = '';
+  correct_p.textContent = '';
+  selected_p.textContent = '';
+  getQuestionData();
 }

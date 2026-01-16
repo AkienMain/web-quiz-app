@@ -6,40 +6,87 @@
 
     <title>webQuizApp</title>
 
+    <link rel="icon" href="image/favicon_64.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
   </head>
-  
-  <body>
-    <div class="bg-primary text-white d-flex justify-content-center">
-      <h1>webQuizApp</h1>
+
+  <header class="bg-primary text-white d-flex justify-content-center">
+    <h1 class="page-title">webQuizApp</h1>
+  </header>
+
+    <div class="d-flex justify-content-center div-large">
+      <div class="align-self-center">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="get_questions_radio" id="get_questions_from_server" onclick="changedGetQuestionsRadio(this.id)">
+          <label class="form-check-label" for="get_questions_from_server">
+            From server
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="get_questions_radio" id="get_questions_from_textarea" onclick="changedGetQuestionsRadio(this.id)" checked>
+          <label class="form-check-label" for="get_questions_from_textarea">
+            From textarea
+          </label>
+        </div>
+      </div>
+      <div id="sheet_name_select_div" class="align-self-center">
+        <div class="align-self-center">Sheet name</div>
+        <div class="align-self-center">
+          <select id="sheet_name_select" class="form-select"></select>
+        </div>
+      </div>
+      <div class="align-self-center">
+        <button id="get_questions_button" class="btn btn-primary" onclick="clickedGetQuestionsButton()">GET QUESTIONS</button>
+      </div>
+      <div class="align-self-center">
+        <div id="spinner" class="spinner-grow text-primary not-visible" role="status"></div>
+      </div>
     </div>
-    <div class="d-flex justify-content-center">
-      <div class="align-self-center">Choose sheet name</div>
-      <div class="align-self-center">
-        <select id="sheet_name_select"></select>
-      </div>
-      <div class="align-self-center">
-        <button id="get_question_button" class="btn btn-primary"></button>
-      </div>
-      <div class="align-self-center">
-        <div id="canvas"></div>
-      </div>
-    </div>
+
     <div class="container">
       <p id="accuracy_p"></p>
       <p id="question_p" class="alert alert-secondary"></p>
       <p id="correct_p"></p>
       <p id="selected_p"></p>
     </div>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center div-large">
       <div id="answer_div"></div>
       <div id="next_div"></div>
     </div>
+    <div id="question_textarea_div" class="div-large">
+      <div class="col">
+        <div class="row justify-content-center">
+          <p style="width: 80vw;">
+            Set questions here satisfied with tsv style (tab is used to separate columns).<br>
+              Columns:<br>
+              1 Number of correct answers<br>
+              2 Number of answers<br>
+              3 Question<br>
+              4 Choices (separated by ;)<br>
+              5 Index of correct answers<br>
+            </p>
+        </div>
+          <div class="row justify-content-center">
+            <textarea class="row" id="question_textarea" rows="20" style="width: 80vw;">
+0	0	1+1=	1;2;3;4	1
+0	0	3*3=	3;9;27	1
+0	0	2^2=	2;4;8	1</textarea>
+        </div>
+      </div>
+    </div>
   </body>
+
+  <footer class="bg-primary text-white">
+    <div class="d-flex justify-content-center div-large">
+      <a href="https://github.com/AkienMain/web-quiz-app" target="_blank">
+        <img src="vector/github-mark-white.svg" style="height: 36px;"></img>
+      </a>
+    </div>
+  </footer>
 
   <script src="sketch.js"></script>
 
