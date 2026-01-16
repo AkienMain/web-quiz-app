@@ -54,13 +54,13 @@ let answerList = [''];
 
 
 // ---------------------------------------------------
-// p5js Functions
+
 
 /**
  * run once
  */
-function setup() {
-  let input = localStorage.getItem('question_textarea_input');
+window.onload = function() {
+    let input = localStorage.getItem('question_textarea_input');
   if (input !== null) {
     question_textarea.value = input;
   }
@@ -68,7 +68,7 @@ function setup() {
     getSheetNames();
   }
   switchVisiblity();
-}
+};
 
 
 // ---------------------------------------------------
