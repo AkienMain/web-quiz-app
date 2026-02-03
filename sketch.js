@@ -18,17 +18,20 @@ const spinner = document.getElementById('spinner');
  * Enum of question source type
  * 0: get question data from server
  * 1: get question data from textarea
+ * 2: get question data from server (api)
  * @type {Object}
  */
 const QuestionSourceType = Object.freeze({
   SERVER: 0,
   TEXTAREA: 1,
+  SERVER_API: 2,
 });
 
 /**
  * Question source type
  * 0: get question data from server
  * 1: get question data from textarea
+ * 2: get question data from server (api)
  * @type {QuestionSourceType}
  */
 let questionSourceType = QuestionSourceType.TEXTAREA;
@@ -38,7 +41,7 @@ let questionSourceType = QuestionSourceType.TEXTAREA;
  * [[Count of correct answer, Count of total answer, Question, Answer list, Correct answer index]]
  * @type {list<list<string>>}
  */
-let qData = [['','','','','']];
+let qData = {};
 
 /**
  * Sheet names
@@ -93,6 +96,24 @@ function getUrl(deployId, query) {
 }
 
 /**
+ * get url api
+ * @param {string} apiUrl Url of Api
+ * @param {dict} query Query parameters
+ * @returns {string} Url string
+ */
+function getUrlApi(apiUrl, query) {
+  let k = Object.keys(query);
+  let v = Object.values(query);
+  let url = apiUrl;
+  if (k != null) url += '?';
+  for (let i=0; i<k.length; i++) {
+    url += k[i] + '=' + v[i];
+    if (i<k.length-1) url += '&';
+  }
+  return url;
+}
+
+/**
  * Get deploy id
  * @returns {string} Deploy id of Apps Script
  */
@@ -111,17 +132,26 @@ function getSpreadsheetId() {
 }
 
 /**
+ * Get query parameter
+ * @param {string} paramName parameter name
+ * @returns {string} Deploy id of Apps Script
+ */
+function getQueryParam(paramName) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(paramName);
+}
+
+/**
  * Get question data
  */
 function getQuestionData() {
-
+  let url = '';
   switch(questionSourceType) {
-    case QuestionSourceType.SERVER:
+    case QuestionSourceType.SERVER_API:
 
-      let url = getUrl(getDeployId(), {
-        'func': 'getData',
-        'spreadsheetId': getSpreadsheetId(),
-        'sheetName': sheet_name_select.options[sheet_name_select.selectedIndex].value
+      url = getUrlApi(getQueryParam('apiurl'), {
+        'method': 'getQuestions',
+        'table': sheet_name_select.options[sheet_name_select.selectedIndex].value
       });
 
       setElementVisible(spinner, true);
@@ -129,14 +159,32 @@ function getQuestionData() {
         setElementVisible(spinner, false);
 
         // Set question data
-        qData = strToArray(response);
+        qData = strToQData(response);
+        // Refresh question
+        refreshQuestion();
+      });
+      break;
+
+    case QuestionSourceType.SERVER:
+
+      url = getUrl(getDeployId(), {
+        'func': 'getData',
+        'table': sheet_name_select.options[sheet_name_select.selectedIndex].value
+      });
+
+      setElementVisible(spinner, true);
+      httpGet(url, function(response) {
+        setElementVisible(spinner, false);
+
+        // Set question data
+        qData = strToQData(response);
         // Refresh question
         refreshQuestion();
       });
       break;
 
     case QuestionSourceType.TEXTAREA:
-      qData = strToArray(question_textarea.value);
+      qData = strToQData(question_textarea.value);
       // Refresh question
       refreshQuestion();
       break;
@@ -165,46 +213,102 @@ function sendResult(index, correct, total) {
 }
 
 /**
- * Get aheet names
+ * Send result after answer (api)
+ * @param {int} index Index of question
+ * @param {string} correct Count of correct answer
+ * @param {string} total Count of total answer
  */
-function getSheetNames() {
+function sendResultApi(index, correct, total) {
 
-  let url = getUrl(getDeployId(), {
-    'func': 'getSheetNames',
-    'spreadsheetId': getSpreadsheetId()
+  let url = getUrlApi(getQueryParam('apiurl'), {
+    'method': 'sendResult',
+    'table': sheet_name_select.options[sheet_name_select.selectedIndex].value,
+    'rowid': index,
+    'countCorrect': correct,
+    'total': total
   });
 
-  setElementVisible(spinner, true);
-  httpGet(url, function(response) {
-    setElementVisible(spinner, false);
-
-    // Set sheet names
-    sheetNames = split(response, ',');
-
-    // Set sheet name option
-    sheet_name_select.innerHTML = null;
-    for (let i=0; i<sheetNames.length; i++) {
-      var option = document.createElement('option');
-      option.text = sheetNames[i];
-      option.value = sheetNames[i];
-      sheet_name_select.add(option);
-    }
-  });
+  httpGet(url, function() {});
 }
 
 /**
- * String to array
- * @param {string} s String
- * @returns {list<string>} Array
+ * Get aheet names
  */
-function strToArray(s) {
-  let array = [];
+function getSheetNames() {
+  let url = '';
+  let sheetNames;
+  switch(questionSourceType) {
+
+    case QuestionSourceType.SERVER_API:
+
+      url = getUrlApi(getQueryParam('apiurl'), {
+        'method': 'getTableNames'
+      });
+
+      setElementVisible(spinner, true);
+      httpGet(url, function(response) {
+        setElementVisible(spinner, false);
+
+        // Set sheet names
+        sheetNames = JSON.parse(response);
+
+        // Set sheet name option
+        sheet_name_select.innerHTML = null;
+        for (let i=0; i<sheetNames.length; i++) {
+          var option = document.createElement('option');
+          option.text = sheetNames[i];
+          option.value = sheetNames[i];
+          sheet_name_select.add(option);
+        }
+      });
+      break;
+
+    case QuestionSourceType.SERVER:
+
+      url = getUrl(getDeployId(), {
+        'func': 'getSheetNames',
+        'spreadsheetId': getSpreadsheetId()
+      });
+
+      setElementVisible(spinner, true);
+      httpGet(url, function(response) {
+        setElementVisible(spinner, false);
+
+        // Set sheet names
+        sheetNames = split(response, ',');
+
+        // Set sheet name option
+        sheet_name_select.innerHTML = null;
+        for (let i=0; i<sheetNames.length; i++) {
+          var option = document.createElement('option');
+          option.text = sheetNames[i];
+          option.value = sheetNames[i];
+          sheet_name_select.add(option);
+        }
+      });
+      break;
+  }
+}
+
+/**
+ * String to QData
+ * @param {string} s String
+ * @returns {object} qData
+ */
+function strToQData(s) {
+  let qData = {};
   let rows = split(s, '\n');
+  if (questionSourceType==QuestionSourceType.SERVER_API) rows.pop();
   for (let i=0; i<rows.length; i++) {
     let row = split(rows[i], '\t');
-    array.push(row);
+    if (questionSourceType==QuestionSourceType.SERVER_API) {
+      let id = row.shift();
+      qData[id] = row;
+    } else {
+      qData[i] = row;
+    }
   }
-  return array;
+  return qData;
 }
 
 /**
@@ -283,13 +387,15 @@ function updateAnswerDiv(index) {
       }
 
       switch(questionSourceType) {
+        case QuestionSourceType.SERVER_API:
+          sendResultApi(index, qData[index][0], qData[index][1]);
+          break;
         case QuestionSourceType.SERVER:
-          // Send result
           sendResult(index, qData[index][0], qData[index][1]);
           break;
         case QuestionSourceType.TEXTAREA:
           // Set questions data to text area and local strage
-          question_textarea.value = arrayToStr(qData);
+          question_textarea.value = arrayToStr(Object.values(qData));
           localStorage.setItem('question_textarea_input', question_textarea.value);
           break;
       }
@@ -384,7 +490,7 @@ function addNumberString(inputStr, additionalInt) {
  * @returns {int} Index of question
  */
 function getRandomIndex() {
-  return int(random(0, qData.length));
+  return Object.keys(qData)[int(random(0, Object.keys(qData).length))];
 }
 
 /**
@@ -418,6 +524,7 @@ function setElementVisible(element, isDisplayed) {
 function switchVisiblity() {
   switch(questionSourceType) {
 
+    case QuestionSourceType.SERVER_API:
     case QuestionSourceType.SERVER:
       setElementVisible(sheet_name_select_div, true);
       setElementVisible(question_textarea_div, false);
@@ -436,6 +543,10 @@ function switchVisiblity() {
  */
 function changedGetQuestionsRadio(id) {
   switch(id) {
+    case 'get_questions_from_server_api':
+      questionSourceType = QuestionSourceType.SERVER_API;
+      getSheetNames();
+      break;
     case 'get_questions_from_server':
       questionSourceType = QuestionSourceType.SERVER;
       getSheetNames();
