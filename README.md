@@ -67,4 +67,15 @@
 
 ## 3. Set data on server (API by Cloudflare Worker + D1 Database)
 
-https://github.com/AkienMain/web-quiz-app-server-cloudflare-public
+- Put url on blowser
+  - Contain deploy id and spreadsheet id in query
+    ```
+    https://akienmain.github.io/web-quiz-app/?apiurl=
+    <<API URL>>
+    ```
+    Example
+    ```
+    https://akienmain.github.io/web-quiz-app/?apiurl=https://web-quiz-app-server-cloudflare.akienmain.workers.dev
+    ```
+
+[Replication of Repository](https://github.com/AkienMain/web-quiz-app-server-cloudflare-public)
