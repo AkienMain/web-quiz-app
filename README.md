@@ -2,7 +2,7 @@
 
 ![images/i007.png](https://github.com/AkienMain/web-quiz-app/blob/main/images/i007.png?raw=true)
 
-[Open on browser](https://akienmain.github.io/web-quiz-app/)
+[Open on browser](https://akienmain.github.io/web-quiz-app/?deployId=AKfycbzawU6UrMJ09U8XodGZQzRl4j7LWMtMp7qM4N4pAIvdhq9Jp-lG5n4uyPuYnoU4c-oA&spreadsheetId=1x6S9YuGaWFpyFIwLl3EXBtH1P32GPfE4T4iKdAVGBTg&apiurl=https://web-quiz-app-server-cloudflare.akienmain.workers.dev)
 
 # How to use it
 
@@ -72,10 +72,6 @@
     ```
     https://akienmain.github.io/web-quiz-app/?apiurl=
     <<API URL>>
-    ```
-    Example
-    ```
-    https://akienmain.github.io/web-quiz-app/?apiurl=https://web-quiz-app-server-cloudflare.akienmain.workers.dev
     ```
 
 [Replication of Repository](https://github.com/AkienMain/web-quiz-app-server-cloudflare-public)
