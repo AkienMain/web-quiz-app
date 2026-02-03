@@ -169,7 +169,8 @@ function getQuestionData() {
 
       url = getUrl(getDeployId(), {
         'func': 'getData',
-        'table': sheet_name_select.options[sheet_name_select.selectedIndex].value
+        'spreadsheetId': getSpreadsheetId(),
+        'sheetName': sheet_name_select.options[sheet_name_select.selectedIndex].value
       });
 
       setElementVisible(spinner, true);
